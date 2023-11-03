@@ -7,25 +7,31 @@ public class CoinGenerator : MonoBehaviour
 
     public GameObject coinPrefab;
 
+    //Max coin number
     public int maxCoinNum;
 
-    public Vector3 gridWorldSize;
-
+    //Generate area
+    public Vector3 worldSize;
     private float xRadius, zRadius;
+
+    //A list to store all coins
+    public List<GameObject> coinList = new List<GameObject>();
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireCube(gameObject.transform.position, gridWorldSize);
+        Gizmos.DrawWireCube(gameObject.transform.position, worldSize);
     }
+
+
     // Start is called before the first frame update
     void Start()
     {
-        xRadius = gridWorldSize.x / 2.0f;
-        zRadius = gridWorldSize.z / 2.0f;
+        xRadius = worldSize.x / 2.0f;
+        zRadius = worldSize.z / 2.0f;
 
         for(int i = 0; i< maxCoinNum; i++)
         {
-            generateCoin();
+            GenerateCoin();
         }
 
     }
@@ -37,7 +43,7 @@ public class CoinGenerator : MonoBehaviour
     }
 
 
-    private void generateCoin()
+    public void GenerateCoin()
     {
 
         float randomX = Random.Range(transform.position.x - xRadius, transform.position.x + xRadius);
@@ -45,6 +51,14 @@ public class CoinGenerator : MonoBehaviour
 
         Vector3 spawnLocation = new Vector3(randomX,0,randomZ);
 
-        Instantiate(coinPrefab, spawnLocation, Quaternion.identity);
+        GameObject coin = Instantiate(coinPrefab, spawnLocation, Quaternion.identity);
+        coinList.Add(coin);
+    }
+
+    public void GetCoin(GameObject coin)
+    {
+        coinList.Remove(coin);
+        Destroy(coin);
+        GenerateCoin();
     }
 }
