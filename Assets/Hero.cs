@@ -24,6 +24,7 @@ public class Hero : MonoBehaviour
     public float moveSpeed = 5.0f;
     private Rigidbody rb;
 
+    public float rotationSpeed = 5.0f;
 
     public struct CoinScore
     {
@@ -69,8 +70,11 @@ public class Hero : MonoBehaviour
 
                 if (targetCoin != null)
                 {
-                    Vector3 movement = targetCoin.transform.position - transform.position;
-                    rb.velocity = movement * moveSpeed;
+                    Vector3 direction = targetCoin.transform.position - transform.position;
+                    rb.velocity = direction * moveSpeed;
+
+                    Quaternion rotation = Quaternion.LookRotation(direction);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
                 }
 
                 break;
