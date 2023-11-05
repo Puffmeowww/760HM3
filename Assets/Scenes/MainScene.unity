@@ -1577,9 +1577,10 @@ GameObject:
   - component: {fileID: 621901637}
   - component: {fileID: 621901638}
   - component: {fileID: 621901639}
+  - component: {fileID: 621901640}
   m_Layer: 6
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1622,7 +1623,6 @@ MonoBehaviour:
   hero: {fileID: 1183228565}
   attackRange: 1
   attackDamage: 20
-  animator: {fileID: 0}
 --- !u!54 &621901639
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1650,6 +1650,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 4
   m_CollisionDetection: 0
+--- !u!65 &621901640
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621901636}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.216199, y: 2.1936972, z: 1}
+  m_Center: {x: -0.08599138, y: 0.5968487, z: 0}
 --- !u!1 &647570331 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8422892626600285392, guid: 214e08cd5e5d74c458e2a81b7ec2c84c, type: 3}
@@ -2736,6 +2757,7 @@ GameObject:
   - component: {fileID: 1183228566}
   - component: {fileID: 1183228567}
   - component: {fileID: 1183228568}
+  - component: {fileID: 1183228569}
   m_Layer: 7
   m_Name: Human
   m_TagString: Untagged
@@ -2800,8 +2822,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heroState: 0
-  moveSpeed: 1
+  moveSpeed: 2
   rotationSpeed: 5
+  attackDamage: 20
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!65 &1183228569
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1183228565}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 1.7686062, y: 0.84175444, z: 1.8831713}
+  m_Center: {x: 0.07599163, y: 0.9299784, z: 0.44158566}
 --- !u!1 &1260702477
 GameObject:
   m_ObjectHideFlags: 0
@@ -4490,7 +4537,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5352958571798197664, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2131179608}
   m_SourcePrefab: {fileID: 100100000, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
 --- !u!1001 &1397154678
 PrefabInstance:
@@ -5900,6 +5950,25 @@ Transform:
   - {fileID: 1136385243}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2131179606 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5352958571798197664, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
+  m_PrefabInstance: {fileID: 1352625928}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2131179608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131179606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 951add0d093645e4ead4a058862a8f5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackTarget: {fileID: 0}
+  hero: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

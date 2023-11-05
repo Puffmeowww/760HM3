@@ -30,6 +30,14 @@ public class Hero : MonoBehaviour
     private float currentHealth = 100f;
     HealthBar healthBar;
 
+    public float attackDamage;
+    public float attackRange = 2f;
+    private GameObject attackTarget;
+    public LayerMask enemyLayer;
+
+    //Animator
+    Animator animator;
+
     public struct CoinScore
     {
         public GameObject coinObject;
@@ -43,7 +51,8 @@ public class Hero : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         coinGenerator = GameObject.Find("CoinGenerator").GetComponent<CoinGenerator>();
         healthBar = GetComponentInChildren<HealthBar>();
-        
+        animator = GetComponentInChildren<Animator>();
+
         heroState = HeroState.ConsideringTarget;   
     }
 
@@ -53,9 +62,22 @@ public class Hero : MonoBehaviour
 
         if((targetCoin != null && (targetCoin.transform.position - transform.position).magnitude <= 0.5f))
         {
-            //Debug.Log("get coin");
             coinGenerator.GetCoin(targetCoin);
             heroState = HeroState.ConsideringTarget;
+            return;
+        }
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, 2f, enemyLayer))
+        {
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                ConsiderAttackOrFlee(hit.collider.gameObject);
+                AttackEnemy ae = GetComponentInChildren<AttackEnemy>();
+                ae.attackTarget = hit.collider.gameObject;
+                attackTarget = hit.collider.gameObject;
+
+            }
         }
 
         switch (heroState)
@@ -73,8 +95,6 @@ public class Hero : MonoBehaviour
 
             case HeroState.Walking:
 
-
-
                 if (targetCoin != null)
                 {
                     Vector3 direction = (targetCoin.transform.position - transform.position).normalized;
@@ -83,6 +103,32 @@ public class Hero : MonoBehaviour
                     Quaternion rotation = Quaternion.LookRotation(direction);
                     transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
                 }
+
+                break;
+
+            case HeroState.Attack:
+                
+                if((attackTarget.transform.position - transform.position).magnitude > attackRange)
+                {
+                    heroState = HeroState.ConsideringTarget;
+                    animator.SetTrigger("Move");
+                    Debug.Log("stop");
+                }
+
+                break;
+
+            case HeroState.Flee:
+
+                if ((attackTarget.transform.position - transform.position).magnitude > 5f)
+                {
+                    heroState = HeroState.ConsideringTarget;
+                }
+
+                Vector3 reverseDirection = -(attackTarget.transform.position - transform.position).normalized;
+                rb.velocity = reverseDirection * moveSpeed;
+                Debug.Log("Flee");
+                Quaternion rotation1 = Quaternion.LookRotation(reverseDirection);
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotation1, rotationSpeed * Time.deltaTime);
 
                 break;
 
@@ -126,8 +172,22 @@ public class Hero : MonoBehaviour
     }
 
 
-    private void ConsiderAttackFlee()
+    //According to current hp and distance to the coin
+    private void ConsiderAttackOrFlee(GameObject tg)
     {
+        float normalizedHp = Mathf.Clamp01(currentHealth/maxHealth);
+        float normalizedDistance = Mathf.Clamp01(1 - ((tg.transform.position - transform.position).magnitude / 100));
+        float score = normalizedDistance + normalizedHp;
+        if (score >= 1.7)
+        {
+            animator.SetTrigger("Attack");
+            heroState = HeroState.Attack;
+        }
+        else
+        {
+            animator.SetTrigger("Move");
+            heroState = HeroState.Flee;
+        }
 
     }
 

@@ -25,6 +25,5 @@ public class AttackAnimator : MonoBehaviour
     public void Attack()
     {
         hero.TakeDamage(enemy.attackDamage);
-        Debug.Log("Attack");
     }
 }

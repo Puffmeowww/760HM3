@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
     HealthBar healthBar;
 
     //Animator
-    public Animator animator;
+    Animator animator;
 
     public struct CoinScore
     {
@@ -66,7 +66,6 @@ public class Enemy : MonoBehaviour
         coinGenerator = GameObject.Find("CoinGenerator").GetComponent<CoinGenerator>();
         animator = GetComponentInChildren<Animator>();
         healthBar = GetComponentInChildren<HealthBar>();
-        healthBar.UpdateHealthBar(20, 100);
         enemyState = EnemyState.ConsideringTarget;
     }
 
@@ -201,11 +200,13 @@ public class Enemy : MonoBehaviour
 
 
         MoveTo(patrolTargetPosition, patrollingSpeed);
-/*        rb.velocity = (patrolTargetPosition - transform.position).normalized * patrollingSpeed;
 
-        Quaternion rotation = Quaternion.LookRotation((patrolTargetPosition - transform.position).normalized);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);*/
+    }
 
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
     }
 
 
