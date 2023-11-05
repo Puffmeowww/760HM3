@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour
         ConsideringPatrol,
         PatrollingAroundCoin,
         ChasingPlayer,
+        AttackingPlayer
     }
     public EnemyState enemyState;
 
@@ -38,12 +39,16 @@ public class Enemy : MonoBehaviour
 
     //Attack Player
     public float attackRange = 1.0f;
+    public float attackDamage = 20f;
 
 
     //HP
     private float maxHealth = 100f;
     private float currentHealth = 100f;
     HealthBar healthBar;
+
+    //Animator
+    public Animator animator;
 
     public struct CoinScore
     {
@@ -59,6 +64,7 @@ public class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         coinGenerator = GameObject.Find("CoinGenerator").GetComponent<CoinGenerator>();
+        animator = GetComponentInChildren<Animator>();
         healthBar = GetComponentInChildren<HealthBar>();
         healthBar.UpdateHealthBar(20, 100);
         enemyState = EnemyState.ConsideringTarget;
@@ -98,18 +104,7 @@ public class Enemy : MonoBehaviour
                 //If target != null, walk towards the target
                 if (targetCoin != null)
                 {
-
-
                     MoveTo(targetCoin.transform.position, moveSpeed);
-
-
-                    /*Vector3 direction = (targetCoin.transform.position - transform.position).normalized;
-
-
-                    rb.velocity = direction * moveSpeed;
-
-                    Quaternion rotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);*/
                 }
 
                 break;
@@ -135,11 +130,22 @@ public class Enemy : MonoBehaviour
 
                 if ((hero.transform.position - transform.position).magnitude <= attackRange)
                 {
-
+                    enemyState = EnemyState.AttackingPlayer;
+                    animator.SetTrigger("Attack");
                 }
 
 
                 MoveTo(hero.transform.position, patrollingSpeed);
+                break;
+
+            case EnemyState.AttackingPlayer:
+
+                if ((hero.transform.position - transform.position).magnitude > attackRange)
+                {
+                    enemyState = EnemyState.ChasingPlayer;
+                    animator.SetTrigger("Move");
+                }
+
                 break;
 
             default:
@@ -209,14 +215,6 @@ public class Enemy : MonoBehaviour
 
         Quaternion rotation = Quaternion.LookRotation((tgPos - transform.position).normalized);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
-    }
-
-
-
-
-    private void CalculateAttackScore()
-    {
-
     }
 
 

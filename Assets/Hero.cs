@@ -43,9 +43,8 @@ public class Hero : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         coinGenerator = GameObject.Find("CoinGenerator").GetComponent<CoinGenerator>();
         healthBar = GetComponentInChildren<HealthBar>();
-        healthBar.UpdateHealthBar(20, 100);
-        heroState = HeroState.ConsideringTarget;
-     
+        
+        heroState = HeroState.ConsideringTarget;   
     }
 
     // Update is called once per frame
@@ -73,6 +72,8 @@ public class Hero : MonoBehaviour
 
 
             case HeroState.Walking:
+
+
 
                 if (targetCoin != null)
                 {
@@ -118,9 +119,16 @@ public class Hero : MonoBehaviour
         return highestCoinScore.coinObject;
     }
 
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
+    }
 
 
+    private void ConsiderAttackFlee()
+    {
 
-
+    }
 
 }
