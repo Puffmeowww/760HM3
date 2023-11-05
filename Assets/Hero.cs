@@ -26,6 +26,10 @@ public class Hero : MonoBehaviour
 
     public float rotationSpeed = 5.0f;
 
+    private float maxHealth = 100f;
+    private float currentHealth = 100f;
+    HealthBar healthBar;
+
     public struct CoinScore
     {
         public GameObject coinObject;
@@ -38,6 +42,8 @@ public class Hero : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         coinGenerator = GameObject.Find("CoinGenerator").GetComponent<CoinGenerator>();
+        healthBar = GetComponentInChildren<HealthBar>();
+        healthBar.UpdateHealthBar(20, 100);
         heroState = HeroState.ConsideringTarget;
      
     }
@@ -48,7 +54,7 @@ public class Hero : MonoBehaviour
 
         if((targetCoin != null && (targetCoin.transform.position - transform.position).magnitude <= 0.5f))
         {
-            Debug.Log("get coin");
+            //Debug.Log("get coin");
             coinGenerator.GetCoin(targetCoin);
             heroState = HeroState.ConsideringTarget;
         }
@@ -70,7 +76,7 @@ public class Hero : MonoBehaviour
 
                 if (targetCoin != null)
                 {
-                    Vector3 direction = targetCoin.transform.position - transform.position;
+                    Vector3 direction = (targetCoin.transform.position - transform.position).normalized;
                     rb.velocity = direction * moveSpeed;
 
                     Quaternion rotation = Quaternion.LookRotation(direction);
