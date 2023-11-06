@@ -127,9 +127,9 @@ public class Enemy : MonoBehaviour
 
             case EnemyState.ChasingPlayer:
 
-
+                animator.SetTrigger("Move");
                 //If too far, go back to protect coin
-                if((targetCoin.transform.position - transform.position).magnitude >= patrollingMaxRadius)
+                if ((targetCoin.transform.position - transform.position).magnitude >= patrollingMaxRadius)
                 {
 
                     enemyState = EnemyState.ConsideringTarget;
