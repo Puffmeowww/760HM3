@@ -127,12 +127,19 @@ public class Enemy : MonoBehaviour
 
             case EnemyState.ChasingPlayer:
 
+
+                //If too far, go back to protect coin
+                if((targetCoin.transform.position - transform.position).magnitude >= patrollingMaxRadius)
+                {
+
+                    enemyState = EnemyState.ConsideringTarget;
+                }
+
                 if ((hero.transform.position - transform.position).magnitude <= attackRange)
                 {
                     enemyState = EnemyState.AttackingPlayer;
                     animator.SetTrigger("Attack");
                 }
-
 
                 MoveTo(hero.transform.position, patrollingSpeed);
                 break;
@@ -207,6 +214,7 @@ public class Enemy : MonoBehaviour
     {
         currentHealth -= damage;
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
+        enemyState = EnemyState.ChasingPlayer;
     }
 
 

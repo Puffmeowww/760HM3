@@ -589,7 +589,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinPrefab: {fileID: 5186735023776687486, guid: ac8efb728f1fb9b4092c4df591c827ca, type: 3}
-  maxCoinNum: 1
+  maxCoinNum: 2
   worldSize: {x: 25.43, y: 0, z: 27.88}
   coinList: []
 --- !u!1001 &203554688
@@ -1622,7 +1622,7 @@ MonoBehaviour:
   detectRange: 3
   hero: {fileID: 1183228565}
   attackRange: 1
-  attackDamage: 20
+  attackDamage: 40
 --- !u!54 &621901639
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2576,6 +2576,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 429d966c6ab740541b265e532e508a88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hero: {fileID: 0}
+  enemy: {fileID: 0}
 --- !u!1001 &1102947312
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2774,7 +2776,7 @@ Transform:
   m_GameObject: {fileID: 1183228565}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.027723, y: 0, z: 2.19}
+  m_LocalPosition: {x: 13.86, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2825,6 +2827,7 @@ MonoBehaviour:
   moveSpeed: 2
   rotationSpeed: 5
   attackDamage: 20
+  attackRange: 2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64

@@ -5,8 +5,8 @@ using UnityEngine;
 public class AttackAnimator : MonoBehaviour
 {
 
-    Hero hero;
-    Enemy enemy;
+    public Hero hero;
+    public Enemy enemy;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +24,6 @@ public class AttackAnimator : MonoBehaviour
 
     public void Attack()
     {
-        hero.TakeDamage(enemy.attackDamage);
+        hero.TakeDamage(enemy.attackDamage,enemy.gameObject);
     }
 }

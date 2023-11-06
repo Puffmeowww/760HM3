@@ -35,6 +35,8 @@ public class Hero : MonoBehaviour
     private GameObject attackTarget;
     public LayerMask enemyLayer;
 
+    private Vector3 fleeDirection;
+
     //Animator
     Animator animator;
 
@@ -60,24 +62,12 @@ public class Hero : MonoBehaviour
     void Update()
     {
 
+        //Check if hero gets the coin
         if((targetCoin != null && (targetCoin.transform.position - transform.position).magnitude <= 0.5f))
         {
             coinGenerator.GetCoin(targetCoin);
             heroState = HeroState.ConsideringTarget;
             return;
-        }
-
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, 2f, enemyLayer))
-        {
-            if (hit.collider.CompareTag("Enemy"))
-            {
-                ConsiderAttackOrFlee(hit.collider.gameObject);
-                AttackEnemy ae = GetComponentInChildren<AttackEnemy>();
-                ae.attackTarget = hit.collider.gameObject;
-                attackTarget = hit.collider.gameObject;
-
-            }
         }
 
         switch (heroState)
@@ -97,38 +87,67 @@ public class Hero : MonoBehaviour
 
                 if (targetCoin != null)
                 {
-                    Vector3 direction = (targetCoin.transform.position - transform.position).normalized;
-                    rb.velocity = direction * moveSpeed;
-
-                    Quaternion rotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
+                    MoveTo(targetCoin.transform.position, moveSpeed);
                 }
+
+                //Check if there is enemy around
+                RaycastHit hit;
+                if (Physics.Raycast(transform.position, transform.forward, out hit, 2f, enemyLayer))
+                {
+                    if (hit.collider.CompareTag("Enemy"))
+                    { 
+                        AttackEnemy ae = GetComponentInChildren<AttackEnemy>();
+                        ae.attackTarget = hit.collider.gameObject;
+                        attackTarget = hit.collider.gameObject;
+                        ConsiderAttackOrFlee(attackTarget);
+                    }
+                }
+
+                break;
+
+            case HeroState.ChasingEnemy:
+
+                //If enemy in attack range, attack
+                if ((attackTarget.transform.position - transform.position).magnitude < attackRange)
+                {
+                    heroState = HeroState.Attack;
+                    animator.SetTrigger("Attack");
+                    return;
+                }
+
+                //if too far, go back to the coin
+                if((targetCoin.transform.position - transform.position).magnitude <= 7f)
+                {
+                    heroState = HeroState.ConsideringTarget;
+                    return;
+                }
+
+                //else, keep chasing enemy
+                MoveTo(attackTarget.transform.position, moveSpeed);
 
                 break;
 
             case HeroState.Attack:
                 
+                //If too far, chasing enemy
                 if((attackTarget.transform.position - transform.position).magnitude > attackRange)
                 {
-                    heroState = HeroState.ConsideringTarget;
+                    heroState = HeroState.ChasingEnemy;
                     animator.SetTrigger("Move");
-                    Debug.Log("stop");
                 }
 
                 break;
 
             case HeroState.Flee:
 
+                //if far enough, go back to find coin
                 if ((attackTarget.transform.position - transform.position).magnitude > 5f)
                 {
                     heroState = HeroState.ConsideringTarget;
+                    return;
                 }
 
-                Vector3 reverseDirection = -(attackTarget.transform.position - transform.position).normalized;
-                rb.velocity = reverseDirection * moveSpeed;
-                Debug.Log("Flee");
-                Quaternion rotation1 = Quaternion.LookRotation(reverseDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, rotation1, rotationSpeed * Time.deltaTime);
+                MoveTo(fleeDirection, moveSpeed*2);
 
                 break;
 
@@ -165,11 +184,23 @@ public class Hero : MonoBehaviour
         return highestCoinScore.coinObject;
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, GameObject enemy)
     {
         currentHealth -= damage;
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
+        attackTarget = enemy;
+
+        //When getting damaged, consider attack or flee
+        ConsiderAttackOrFlee(attackTarget);
     }
+
+    private void MoveTo(Vector3 tgPos, float speed)
+    {
+        rb.velocity = (tgPos - transform.position).normalized * speed;
+        Quaternion rotation = Quaternion.LookRotation((tgPos - transform.position).normalized);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
+    }
+
 
 
     //According to current hp and distance to the coin
@@ -180,12 +211,13 @@ public class Hero : MonoBehaviour
         float score = normalizedDistance + normalizedHp;
         if (score >= 1.7)
         {
-            animator.SetTrigger("Attack");
-            heroState = HeroState.Attack;
+            animator.SetTrigger("Move");
+            heroState = HeroState.ChasingEnemy;
         }
         else
         {
             animator.SetTrigger("Move");
+            fleeDirection = -attackTarget.transform.position;
             heroState = HeroState.Flee;
         }
 
