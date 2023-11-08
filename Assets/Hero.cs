@@ -79,6 +79,7 @@ public class Hero : MonoBehaviour
                 if(targetCoin != null)
                 {
                     heroState = HeroState.Walking;
+                    animator.SetTrigger("Move");
                 }
                 break;
 
