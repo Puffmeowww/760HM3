@@ -35,7 +35,7 @@ public class Enemy : MonoBehaviour
 
     //Detect player
     public float detectRange = 2.0f;
-    public GameObject hero;
+    private GameObject hero;
 
     //Attack Player
     public float attackRange = 1.0f;
@@ -49,6 +49,9 @@ public class Enemy : MonoBehaviour
 
     //Animator
     Animator animator;
+
+    //EnemyGenerator
+    public EnemyGenerator enemyGenerator;
 
     public struct CoinScore
     {
@@ -66,6 +69,7 @@ public class Enemy : MonoBehaviour
         coinGenerator = GameObject.Find("CoinGenerator").GetComponent<CoinGenerator>();
         animator = GetComponentInChildren<Animator>();
         healthBar = GetComponentInChildren<HealthBar>();
+        hero = GameObject.Find("Human");
         enemyState = EnemyState.ConsideringTarget;
     }
 
@@ -87,6 +91,12 @@ public class Enemy : MonoBehaviour
                 if (targetCoin != null)
                 {
                     enemyState = EnemyState.Walking;
+                    targetCoin.GetComponent<Coin>().currentProtector = gameObject;
+                    animator.SetTrigger("Move");
+                }
+                else
+                {
+                    Debug.Log("consider wrong");
                 }
                 break;
 
@@ -150,6 +160,7 @@ public class Enemy : MonoBehaviour
                 {
                     enemyState = EnemyState.ChasingPlayer;
                     animator.SetTrigger("Move");
+                    
                 }
 
                 break;
@@ -166,6 +177,9 @@ public class Enemy : MonoBehaviour
 
         foreach (GameObject coin in coinGenerator.coinList)
         {
+
+            if(coin.GetComponent<Coin>().currentProtector == null) 
+            { 
             //Normalize the score
             float normalizedDistance = Mathf.Clamp01(1 - ((coin.transform.position - transform.position).magnitude / 100));
 
@@ -173,21 +187,30 @@ public class Enemy : MonoBehaviour
             newCoinScore.coinObject = coin;
             newCoinScore.score = normalizedDistance;
             coinScoreList.Add(newCoinScore);
-        }
-
-        CoinScore highestCoinScore = coinScoreList[0];
-        foreach (CoinScore cs in coinScoreList)
-        {
-            if (cs.score > highestCoinScore.score)
-            {
-                highestCoinScore = cs;
             }
         }
 
-        coinScoreList.Clear();
-        return highestCoinScore.coinObject;
-    }
+        if(coinScoreList.Count > 0)
+        {
+            CoinScore highestCoinScore = coinScoreList[0];
+            foreach (CoinScore cs in coinScoreList)
+            {
+                if (cs.score > highestCoinScore.score)
+                {
+                    highestCoinScore = cs;
+                }
+            }
 
+            coinScoreList.Clear();
+            return highestCoinScore.coinObject;
+        }
+        else
+        {
+            return null;
+        }
+
+        
+    }
 
     private void RandomPatrolling()
     {
@@ -196,6 +219,8 @@ public class Enemy : MonoBehaviour
         if ((hero.transform.position - transform.position).magnitude <= detectRange)
         {
             enemyState = EnemyState.ChasingPlayer;
+            targetCoin.GetComponent<Coin>().currentProtector = null;
+            return;
         }
 
         //Get patrolling point
@@ -215,8 +240,13 @@ public class Enemy : MonoBehaviour
         currentHealth -= damage;
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
         enemyState = EnemyState.ChasingPlayer;
-    }
 
+        if(currentHealth <= 0)
+        {
+            enemyGenerator.GenerateEnemy();
+            Destroy(gameObject);
+        }
+    }
 
     private void MoveTo(Vector3 tgPos, float speed)
     {

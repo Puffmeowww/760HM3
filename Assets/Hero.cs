@@ -107,6 +107,11 @@ public class Hero : MonoBehaviour
 
             case HeroState.ChasingEnemy:
 
+                if(attackTarget == null)
+                {
+                    heroState = HeroState.ConsideringTarget;
+                    return;
+                }
                 //If enemy in attack range, attack
                 if ((attackTarget.transform.position - transform.position).magnitude < attackRange)
                 {
@@ -128,9 +133,15 @@ public class Hero : MonoBehaviour
                 break;
 
             case HeroState.Attack:
-                
+
+                if (attackTarget == null)
+                {
+                    heroState = HeroState.ConsideringTarget;
+                    return;
+                }
+
                 //If too far, chasing enemy
-                if((attackTarget.transform.position - transform.position).magnitude > attackRange)
+                if ((attackTarget.transform.position - transform.position).magnitude > attackRange)
                 {
                     heroState = HeroState.ChasingEnemy;
                     animator.SetTrigger("Move");
@@ -139,6 +150,12 @@ public class Hero : MonoBehaviour
                 break;
 
             case HeroState.Flee:
+
+                if (attackTarget == null)
+                {
+                    heroState = HeroState.ConsideringTarget;
+                    return;
+                }
 
                 //if far enough, go back to find coin
                 if ((attackTarget.transform.position - transform.position).magnitude > 5f)

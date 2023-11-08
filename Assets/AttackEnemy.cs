@@ -15,7 +15,11 @@ public class AttackEnemy : MonoBehaviour
 
     public void Attack()
     {
-        Enemy e = attackTarget.GetComponent<Enemy>();
-        e.TakeDamage(hero.attackDamage);
+        if(attackTarget)
+        {
+            Enemy e = attackTarget.GetComponent<Enemy>();
+            e.TakeDamage(hero.attackDamage);
+        }
+        
     }
 }
