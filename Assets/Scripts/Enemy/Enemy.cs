@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
 
     //HP
     private float maxHealth = 100f;
-    private float currentHealth = 100f;
+    public float currentHealth = 100f;
     HealthBar healthBar;
 
     //Animator
@@ -244,7 +244,15 @@ public class Enemy : MonoBehaviour
         if(currentHealth <= 0)
         {
             enemyGenerator.GenerateEnemy();
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            GameObject gameObjectToUnparent = this.gameObject;
+
+            Transform parentTransform = gameObjectToUnparent.transform.parent;
+
+            if (parentTransform != null)
+            {
+                Destroy(parentTransform.gameObject);
+            }
         }
     }
 

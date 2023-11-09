@@ -34,6 +34,7 @@ public class Hero : MonoBehaviour
     public float attackRange = 2f;
     private GameObject attackTarget;
     public LayerMask enemyLayer;
+    public float normalizedScore = 1.0f;
 
     private Vector3 fleeDirection;
 
@@ -226,8 +227,9 @@ public class Hero : MonoBehaviour
     {
         float normalizedHp = Mathf.Clamp01(currentHealth/maxHealth);
         float normalizedDistance = Mathf.Clamp01(1 - ((tg.transform.position - transform.position).magnitude / 100));
-        float score = normalizedDistance + normalizedHp;
-        if (score >= 1.7)
+        float normalizedEnemyHP = Mathf.Clamp01(1 - (attackTarget.GetComponentInChildren<Enemy>().currentHealth / 100));
+        float score = normalizedDistance + normalizedHp + 0.5f * normalizedEnemyHP;
+        if (score >= normalizedScore)
         {
             animator.SetTrigger("Move");
             heroState = HeroState.ChasingEnemy;
